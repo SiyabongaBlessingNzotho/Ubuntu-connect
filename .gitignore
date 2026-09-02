@@ -1,9 +1,13 @@
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-data/raw/*
-*.csv
-*.pkl
-*.h5
+# Environments
 venv/
 env/
+.venv/
+__pycache__/
+*.pyc
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+
+
