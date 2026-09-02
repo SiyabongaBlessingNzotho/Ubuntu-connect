@@ -1,0 +1,62 @@
+UBUNTU-CONNECT: AI-POWERED STUDENT AT-RISK DETECTION
+====================================================
+
+1. BUSINESS BACKGROUND
+----------------------
+Student attrition and academic failure remain persistent challenges across the education sector. Historically, academic staff only identify a struggling student once formal results confirm failure — typically at the end of a term — by which point relatively little time remains for meaningful intervention. This reactive model carries real cost: repeated modules cost the student time and money, repeated enrolments cost the institution throughput and resources, and dropout carries long-term social and economic consequences for the student and the community they return to.
+
+At the same time, most institutions already collect the raw data needed to predict risk far earlier than a term-end report card does — attendance registers, continuous assessment marks, and assignment submission records — but this data is rarely combined and analysed together in real time. The Education industry is well positioned to adopt the same predictive analytics approach already common in banking (credit risk scoring) and healthcare (patient risk scoring): converting data institutions already hold into a proactive, explainable early-warning system that gives staff time to act before a student fails.
+
+2. BUSINESS OBJECTIVES
+----------------------
+1. Identify students at academic risk earlier than the current end-of-term review process allows.
+2. Give academic staff a clear, explainable reason behind every risk flag, not just a raw score.
+3. Support a measurable, longer-term reduction in avoidable student failure and dropout through earlier intervention.
+
+3. BUSINESS SUCCESS CRITERIA
+----------------------------
+1. The risk model achieves at least 70% precision on the "High Risk" class.
+2. 100% of Medium/High risk flags are accompanied by at least one machine-generated reason.
+3. A measurable reduction in the fail rate of students who received intervention after being flagged.
+
+4. TECHNICAL REQUIREMENTS
+-------------------------
+1. The system shall use Python with Pandas, Scikit-learn, and TensorFlow/Keras.
+2. The system shall store weekly student data (attendance, assessment scores, engagement) in structured CSV format.
+3. The system shall generate a numeric risk score (0–1) and risk tier for each student.
+4. The system shall expose predictions through a REST API (FastAPI).
+5. The system shall provide a chatbot interface for staff to query risk status.
+
+5. CONSTRAINTS
+--------------
+1. No real consented student data available — dataset is from Kaggle.
+2. Development limited to 9 weeks.
+3. No budget for paid services — all open-source.
+
+6. RISKS
+--------
+1. Data privacy — mitigated by using only Kaggle data.
+2. Model bias — mitigated by never using protected attributes as features.
+3. Automation bias — mitigated by always presenting supporting reasons alongside scores.
+
+7. TOOLS & TECHNIQUES
+---------------------
+Python 3 · Pandas & NumPy · Scikit-learn · TensorFlow/Keras · TextBlob · imbalanced-learn/SMOTE · FastAPI · GitHub Projects
+
+8. PROBLEM DEFINITION
+---------------------
+Academic staff typically discover that a student is struggling only after formal results confirm failure, usually at the end of a term, by which point little time remains for meaningful intervention. Attendance registers, continuous assessment marks, and assignment submission records are already collected by most institutions, but are rarely analysed together in real time, so early warning signs — declining attendance, falling scores, missed submissions — go unnoticed until academic damage is already done. This reflects a reactive, rather than proactive, approach to student support.
+
+This problem is directly relevant to the "AI Solution for Industries" theme: it applies predictive machine learning to the Education industry, converting data institutions already hold into an early-warning system. Solving this with AI benefits the university by enabling earlier, better-targeted academic support, which can reduce avoidable module failures and dropouts, protect student throughput rates, and strengthen the institution's overall academic outcomes and reputation.
+
+9. TIME-SERIES JUSTIFICATION
+----------------------------
+Although the dataset does not contain weekly observations, the time series analysis requirement is met by treating the three sequential grading periods (G1, G2, and G3) as discrete time steps. Features such as g1_to_g2_change (the difference between the first and second period grades) and avg_g1_g2 allow the model to capture temporal trends in student performance. The rolling averages, trend slopes, and period-to-period changes extracted from the G1, G2, and G3 grades fulfill the rubric's requirement for time-based feature extraction and temporal pattern analysis.
+
+10. DATASET CHOICE
+------------------
+The project uses the UCI Student Performance dataset from Kaggle (student-mat.csv and student-por.csv). This dataset contains 33 attributes including demographic information, family background, study habits, and grades (G1, G2, G3) for 395 students in Mathematics and 395 students in Portuguese. The dataset was chosen because it is widely used in educational data mining research and contains structured features suitable for classification.
+
+11. AT-RISK THRESHOLD
+---------------------
+A student is classified as "At Risk" if their final grade (G3) is below 10 out of 20. In the Portuguese education system (the source of the dataset), 10 is the passing grade. This threshold creates a binary classification problem where the model predicts whether a student will pass or fail based on their earlier academic and behavioral indicators.
