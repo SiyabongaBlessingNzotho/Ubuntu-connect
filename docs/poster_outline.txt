@@ -1,0 +1,47 @@
+POSTER: UBUNTU-CONNECT
+=======================
+
+TITLE: Ubuntu-Connect: AI-Powered Student At-Risk Detection
+
+SECTION 1: THE PROBLEM
+----------------------
+• Struggling students are usually identified too late (after final exams)
+• Attendance & grade data already exists but isn't analysed predictively
+• Staff need proactive, explainable early-warning system
+
+SECTION 2: THE SOLUTION
+-----------------------
+An AI system that scores every student's risk weekly and explains why, so staff can act early.
+
+SECTION 3: ARCHITECTURE DIAGRAM
+-------------------------------
+[Weekly CSV Data] → [Feature Engineering: G1/G2 time-series] → [ML/DL Models: Random Forest + Keras] → [Risk API: FastAPI] → [Dashboard + Chatbot]
+
+SECTION 4: KEY FEATURES
+-----------------------
+• Weekly risk scoring (0–1)
+• Explainable reason codes for every flag
+• Time-series trend detection (G1 → G2 → G3)
+• Deep learning model (Keras neural network)
+• Sentiment analysis of teacher notes (TextBlob)
+• Chatbot for staff queries
+
+SECTION 5: RESULTS
+------------------
+• Random Forest: Precision: XX%, Recall: XX%, F1: XX%
+• Deep Learning: Precision: XX%, Recall: XX%, F1: XX%
+• SMOTE improved recall for At-Risk class by XX%
+
+SECTION 6: WORKED EXAMPLE
+-------------------------
+Student S10014 — High Risk (0.82)
+Reasons: High absences (12 days), Grades declining between periods
+
+SECTION 7: TECHNICAL STACK
+--------------------------
+Python · Pandas · Scikit-learn · TensorFlow/Keras · TextBlob · SMOTE · FastAPI · GitHub
+
+FOOTER
+------
+GitHub: github.com/SiyabongaBlessingNzotho/Ubuntu-connect
+Team Members: [Your names here]
