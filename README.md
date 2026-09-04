@@ -103,4 +103,14 @@ _To be added once `train_random_forest.py`, `train_with_smote.py`, and `train_de
 
 ## Team
 
-9-person team project. Team Leader :Spha = load data
+9-person team project. Team Leader :Siyabonga Nzotho 
+
+1-Person =
+2-Person
+3-Person
+4-Person
+5-Person
+6-Person
+7-Person
+8-Person
+9-Person
