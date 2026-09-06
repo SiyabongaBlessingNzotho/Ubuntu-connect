@@ -16,7 +16,7 @@ df['g1_to_g2_change'] = df['G2'] - df['G1']
 df['avg_g1_g2'] = (df['G1'] + df['G2']) / 2
 
 # --- 2. Encode categorical columns (separate encoder per column, kept for reference) ---
-categoricals = ['sex', 'address', 'famsize', 'Pstatus', 'schoolsup', 'famsup']
+categoricals = ['address', 'famsize', 'Pstatus', 'schoolsup', 'famsup']
 encoders = {}
 for col in categoricals:
     le = LabelEncoder()
@@ -32,7 +32,7 @@ feature_columns = [
     'student_id',
     'age', 'studytime', 'failures', 'absences',
     'g1_to_g2_change', 'avg_g1_g2',
-    'sex', 'address', 'famsize', 'Pstatus', 'schoolsup', 'famsup',
+    'address', 'famsize', 'Pstatus', 'schoolsup', 'famsup',
     'label_at_risk'
 ]
 
