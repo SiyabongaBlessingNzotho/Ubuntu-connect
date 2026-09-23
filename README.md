@@ -146,7 +146,8 @@ All figures are for the **At-Risk** class on the 209-student test set (80/20 str
 | Model | Precision | Recall | F1 |
 |---|---|---|---|
 | Random Forest (baseline, `class_weight='balanced'`) | 0.64 | 0.89 | 0.75 |
-| Random Forest + SMOTE | pending | pending | pending |
+| Random Forest + SMOTE (no NLP) | 0.71 | 0.87 | 0.78 |
+| Random Forest + SMOTE (with NLP) | 0.70 | 0.85 | 0.76 |
 | Deep Learning (Keras) | 0.78 | 0.76 | 0.77 |
 
 **Random Forest baseline:** 100 trees, trained on 835 students. Overall accuracy 0.87. Confusion matrix on the test set:
@@ -162,8 +163,21 @@ The model catches 41 of the 46 at-risk students and misses 5. It also raises 23 
 
 **Comparison:** the Random Forest catches more at-risk students, while the Keras model raises fewer false alarms. Because missing an at-risk student costs more than a false alarm, the team treats recall as the priority metric, which favours the Random Forest so far. The two models are not fully like-for-like: the Random Forest uses `class_weight='balanced'` while the Keras model uses no class weighting, and the test set contains only 46 at-risk students, so small differences between the models should be treated with caution.
 
+**Random Forest + SMOTE:** trained on the same 80/20 split, with SMOTE applied to the training data only (never the test set) to balance the classes, in place of `class_weight='balanced'`. Run two ways: on `student_features.csv` and on `student_features_nlp.csv`. Compared with the plain baseline, SMOTE trades a little recall for meaningfully higher precision (0.64 → 0.71, recall 0.89 → 0.87). Adding the NLP sentiment features on top makes every metric slightly worse (precision 0.71 → 0.70, recall 0.87 → 0.85, F1 0.78 → 0.76) rather than better. This is the expected, honest result: the synthetic teacher notes are generated from `absences`, `failures` and `avg_g1_g2`, which are already present in the plain feature table, so the sentiment scores add noise rather than new information.
+
+**Model chosen for deployment:** the plain Random Forest baseline still has the highest recall (0.89) of all four/five variants tested, so it remains the front-runner on the team's priority metric. Final choice pending team sign-off.
+
 ## Team
 
-9-person team project. Team Leader: Spha (load data)
+9-person team project.
 
-<!-- TODO: complete the team table with each person's role. -->
+| # | Stage | Name | Role |
+|---|---|---|---|
+| 1 | Data loading | Sphamandla Radebe | Load and combine datasets |
+| 2 | Feature engineering | Siyabonga Nzotho (Team Leader) | Feature engineering |
+| 3 | Baseline model | Pontsho Radebe | Random Forest baseline |
+| 4 | Deep learning | Prudence | Deep Learning model (Keras) |
+| 5 | NLP | Khutso | NLP sentiment analysis |
+| 6 | Class imbalance | Humphrey | SMOTE + final model comparison |
+| 7 | API | Esnath | API `/predict` endpoint |
+| 9 | Documentation | Bayedefives | Documentation & poster |
