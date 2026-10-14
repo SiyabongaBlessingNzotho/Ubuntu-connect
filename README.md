@@ -104,6 +104,13 @@ There is no single entry point. Run the pipeline steps in order from the repo ro
    uvicorn src.api_server:app --reload
    ```
 
+   Two endpoints are available once the server is running:
+
+   - **`POST /predict`** — returns a risk score, risk level, and a machine-generated reason for a single student given their feature values.
+   - **`POST /chat`** — accepts a plain-text staff message and optional student features; returns intervention tips, the risk level, and a disclaimer. Supports topics: attendance, grades, previous failures, study habits, and risk-level definitions.
+   - **`GET /health`** — returns the loaded model name and feature count.
+   - Interactive API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+
 ## NLP Sentiment Analysis (Teacher Notes)
 
 The UCI student performance dataset contains no free-text field, so teacher comments were synthesised from each student's absences, prior failures and grade trajectory (G1/G2) in order to demonstrate the NLP component. The generation process does not use G3 or `label_at_risk`. In a live deployment these comments would be drawn from real learning-management-system entries.
@@ -114,6 +121,44 @@ The UCI student performance dataset contains no free-text field, so teacher comm
 - Requires `pip install textblob`.
 
 Because the notes are built from features already in `student_features.csv`, any recall gain from the NLP features should be read with that in mind. The final comparison trains the model on both `student_features.csv` and `student_features_nlp.csv`.
+
+## Chat Endpoint (`/chat`)
+
+`src/api_server.py` exposes a `/chat` endpoint (implemented by Person 8) that gives academic staff plain-English intervention tips without requiring them to understand the underlying model.
+
+**Request body:**
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `message` | string | ✓ | Free-text question or topic from the staff member |
+| `student_id` | string | — | Used only for labelling the reply |
+| `features` | object | — | Same feature dict as `/predict`; triggers a live risk score |
+
+**Behaviour:**
+- If `features` are supplied the endpoint calls the loaded model, returns the risk level and probability, and selects the top contributing risk factors (absences, failures, grade change, avg grade, study time) to generate personalised tips.
+- If no `features` are supplied, the endpoint matches keywords in `message` against four topic banks (attendance, grades, previous failures, study habits) and returns the relevant tips.
+- Asking "risk level" in the message always returns the tier definitions.
+- Every reply ends with a staff disclaimer: *"These are suggestions for staff. Confirm with the student before acting."*
+
+**Example request:**
+
+```json
+{
+  "message": "What should I do about a student with poor attendance?",
+  "student_id": "S10014"
+}
+```
+
+**Example response:**
+
+```json
+{
+  "reply": "Tips:\n1. Talk to the student privately about why they miss classes...\nThese are suggestions for staff...",
+  "risk_level": null,
+  "risk_probability": null,
+  "tips": ["Talk to the student privately about why they miss classes (transport, work, family, motivation).", "Agree a small attendance target and review it weekly."]
+}
+```
 
 ## Deep Learning Model (Keras)
 
@@ -131,6 +176,12 @@ Because the notes are built from features already in `student_features.csv`, any
 
 Cortez, P., & Silva, A. (2008). *Using Data Mining to Predict Secondary School Student Performance.* UCI Machine Learning Repository, Student Performance Dataset. 33 attributes covering demographics, family background, study habits, and grades (G1, G2, G3) for 395 students in Mathematics and 649 in Portuguese (1,044 records combined).
 
+**Prior use of this dataset:**
+
+- Cortez, P., & Silva, A. (2008). *Using Data Mining to Predict Secondary School Student Performance.* In Proceedings of 5th Annual Future Business Technology Conference (FUBUTEC), Porto, Portugal. — the original paper introducing the dataset; demonstrates that Random Forest and Neural Network classifiers can predict student final grades from behavioural and demographic features.
+- Amrieh, E. A., Hamtini, T., & Aljarah, I. (2015). *Preprocessing and Analyzing Educational Data Set Using X-API for Improving Student's Performance.* IEEE AEECT. — applies Naïve Bayes, Decision Tree and Neural Network classifiers to a student engagement dataset; widely cited alongside the UCI dataset in educational data mining comparisons.
+- Hussain, S., Dahan, N. A., Ba-Alwi, F. M., & Ribata, N. (2018). *Educational Data Mining and Analysis of Students' Academic Performance Using WEKA.* Indonesian Journal of Electrical Engineering and Computer Science. — surveys machine learning methods (Decision Tree, SVM, Neural Network) applied to student performance datasets including the UCI set, and establishes benchmarks that subsequent work — including this project — builds on.
+
 ## Constraints & Risks
 
 - No real consented student data is used; the dataset is sourced from Kaggle/UCI.
@@ -143,12 +194,12 @@ Cortez, P., & Silva, A. (2008). *Using Data Mining to Predict Secondary School S
 
 All figures are for the **At-Risk** class on the 209-student test set (80/20 stratified split, `random_state=42`).
 
-| Model | Precision | Recall | F1 |
-|---|---|---|---|
-| Random Forest (baseline, `class_weight='balanced'`) | 0.64 | 0.89 | 0.75 |
-| Random Forest + SMOTE (no NLP) | 0.71 | 0.87 | 0.78 |
-| Random Forest + SMOTE (with NLP) | 0.70 | 0.85 | 0.76 |
-| Deep Learning (Keras) | 0.78 | 0.76 | 0.77 |
+| Model | Precision | Recall | F1 | Accuracy |
+|---|---|---|---|---|
+| Random Forest (baseline, `class_weight='balanced'`) | 0.64 | 0.89 | 0.75 | 0.87 |
+| Random Forest + SMOTE (no NLP) | 0.71 | 0.87 | 0.78 | 0.89 |
+| Random Forest + SMOTE (with NLP) | 0.70 | 0.85 | 0.76 | 0.88 |
+| Deep Learning (Keras) | 0.78 | 0.76 | 0.77 | 0.90 |
 
 **Random Forest baseline:** 100 trees, trained on 835 students. Overall accuracy 0.87. Confusion matrix on the test set:
 
@@ -165,7 +216,7 @@ The model catches 41 of the 46 at-risk students and misses 5. It also raises 23 
 
 **Random Forest + SMOTE:** trained on the same 80/20 split, with SMOTE applied to the training data only (never the test set) to balance the classes, in place of `class_weight='balanced'`. Run two ways: on `student_features.csv` and on `student_features_nlp.csv`. Compared with the plain baseline, SMOTE trades a little recall for meaningfully higher precision (0.64 → 0.71, recall 0.89 → 0.87). Adding the NLP sentiment features on top makes every metric slightly worse (precision 0.71 → 0.70, recall 0.87 → 0.85, F1 0.78 → 0.76) rather than better. This is the expected, honest result: the synthetic teacher notes are generated from `absences`, `failures` and `avg_g1_g2`, which are already present in the plain feature table, so the sentiment scores add noise rather than new information.
 
-**Model chosen for deployment:** the plain Random Forest baseline still has the highest recall (0.89) of all four/five variants tested, so it remains the front-runner on the team's priority metric. Final choice pending team sign-off.
+**Model chosen for deployment:** the team has selected **Random Forest + SMOTE (no NLP)** as the deployed model. It achieves the highest precision of all Random Forest variants (0.71) while retaining strong recall (0.87), and it is the only Random Forest variant that meets the 70% precision target set in the success criteria. The plain baseline has higher recall (0.89) but falls below the precision target (0.64), and adding NLP features slightly reduces both precision and recall without adding new information. The SMOTE no-NLP model is therefore the best balance of the team's two goals.
 
 ## Team
 
@@ -180,4 +231,5 @@ The model catches 41 of the 46 at-risk students and misses 5. It also raises 23 
 | 5 | NLP | Khutso | NLP sentiment analysis |
 | 6 | Class imbalance | Humphrey | SMOTE + final model comparison |
 | 7 | API | Esnath | API `/predict` endpoint |
+| 8 | Chatbot | Khanimamba Maluleke | `/chat` endpoint (rule-based intervention tips) |
 | 9 | Documentation | Bayedefives | Documentation & poster |
