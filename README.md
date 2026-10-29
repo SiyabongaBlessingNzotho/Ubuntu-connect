@@ -208,7 +208,7 @@ Because the notes are built from features already in `student_features.csv`, any
 
 ## Data Source
 
-The data is the Student Performance dataset created by Cortez and Silva (2008), uploaded to Kaggle by Data-Science Sean (larsen0966) and downloaded from https://www.kaggle.com/datasets/larsen0966/student-performance-data-set (accessed 28 October 2026). It has 33 attributes covering demographics, family background, study habits and grades (G1, G2, G3) for 395 students in Mathematics and 649 in Portuguese (1,044 records combined).
+The data is the Student Performance dataset created by Cortez and Silva (2008), uploaded to Kaggle by Data-Science Sean (larsen0966) and downloaded from https://www.kaggle.com/datasets/larsen0966/student-performance-data-set (accessed 28 October 2026). Original repository: https://archive.ics.uci.edu/dataset/320/student+performance (DOI: 10.24432/C5TG7T). It has 33 attributes covering demographics, family background, study habits and grades (G1, G2, G3) for 395 students in Mathematics and 649 in Portuguese (1,044 records combined).
 
 Original source: Cortez, P., & Silva, A. (2008). *Using Data Mining to Predict Secondary School Student Performance.* In Proceedings of the 5th Annual Future Business Technology Conference (FUBUTEC), Porto, Portugal.
 
@@ -289,9 +289,9 @@ The High level is the one that meets the 70% precision success criterion.
 | 1 | Data loading | Sphamandla Radebe | Load and combine datasets |
 | 2 | Feature engineering | Siyabonga Nzotho (Team Leader) | Feature engineering |
 | 3 | Baseline model | Pontsho Radebe | Random Forest baseline |
-| 4 | Deep learning | Prudence | Deep Learning model (Keras) |
-| 5 | NLP | Khutso | NLP sentiment analysis |
-| 6 | Class imbalance | Humphrey | SMOTE + final model comparison |
-| 7 | API | Esnath | API /predict endpoint |
+| 4 | Deep learning | Prudence Mbele | Deep Learning model (Keras) |
+| 5 | NLP | Khutso Boloka | NLP sentiment analysis |
+| 6 | Class imbalance | Humphrey Maluleke | SMOTE + final model comparison |
+| 7 | API | Esnath Kwinda | API /predict endpoint |
 | 8 | Chatbot | Khanimamba Maluleke | /chat endpoint (rule-based intervention tips) |
-| 9 | Documentation | Bayedefives | Documentation & poster |
+| 9 | Documentation | Bayede Mthethwa| Documentation & poster |
